@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>TUI Airlines PTFS — Server Rules</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* Font stack fallbacks - no external dependency */
+</style>
 <style>
   :root {
     --tui: #003580;
@@ -28,7 +30,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     background: #f0f4fa;
     color: var(--text);
     min-height: 100vh;
@@ -55,7 +57,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-weight: 700;
     font-size: 15px;
     color: white;
@@ -128,7 +130,7 @@
     border: 1px solid rgba(255,255,255,0.15);
   }
   .hero h1 {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: clamp(32px, 5vw, 52px);
     font-weight: 800;
     color: white;
@@ -162,7 +164,7 @@
     backdrop-filter: blur(4px);
   }
   .hero-stat-num {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: 22px;
     font-weight: 800;
     color: white;
@@ -198,7 +200,7 @@
     box-shadow: 0 2px 12px rgba(0,53,128,0.06);
   }
   .sidebar-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.2px;
@@ -241,7 +243,7 @@
     box-shadow: 0 2px 12px rgba(0,53,128,0.06);
   }
   .severity-legend-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 1.2px;
@@ -306,7 +308,7 @@
   }
   .section-meta { flex: 1; }
   .section-name {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: 15px;
     font-weight: 700;
     color: var(--tui);
@@ -335,7 +337,7 @@
   .rule-item:last-child { border-bottom: none; }
   .rule-item:hover { background: #fafbff; }
   .rule-num {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: 11px;
     font-weight: 700;
     color: var(--tui);
@@ -353,7 +355,7 @@
     margin-bottom: 5px;
   }
   .rule-title {
-    font-family: 'Syne', sans-serif;
+    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
     font-size: 14px;
     font-weight: 600;
     color: var(--text);
