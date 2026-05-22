@@ -3,410 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>TUI Airlines PTFS — Server Rules</title>
 <style>
-  /* Font stack fallbacks - no external dependency */
-</style>
-<style>
-  :root {
-    --tui: #003580;
-    --tui-mid: #1a4d9e;
-    --tui-light: #e8f0fb;
-    --tui-glow: rgba(0,53,128,0.12);
-    --warn-bg: #fef3cd;
-    --warn: #92650a;
-    --kick-bg: #fde8de;
-    --kick: #a03320;
-    --ban-bg: #fde8e8;
-    --ban: #a02020;
-    --surface: #ffffff;
-    --surface2: #f7f8fc;
-    --border: rgba(0,53,128,0.1);
-    --text: #1a1a2e;
-    --muted: #6b7280;
-    --rule-line: #e5e9f2;
-  }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    background: #f0f4fa;
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* NAV */
-  nav {
-    background: var(--tui);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .nav-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .nav-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-weight: 700;
-    font-size: 15px;
-    color: white;
-    letter-spacing: 0.3px;
-  }
-  .nav-logo span {
-    background: white;
-    color: var(--tui);
-    font-size: 11px;
-    font-weight: 800;
-    padding: 2px 8px;
-    border-radius: 4px;
-    letter-spacing: 1px;
-  }
-  .nav-links {
-    display: flex;
-    gap: 4px;
-  }
-  .nav-links a {
-    color: rgba(255,255,255,0.65);
-    text-decoration: none;
-    font-size: 13px;
-    padding: 6px 12px;
-    border-radius: 6px;
-    transition: all 0.15s;
-  }
-  .nav-links a:hover { color: white; background: rgba(255,255,255,0.1); }
-
-  /* HERO */
-  .hero {
-    background: linear-gradient(135deg, #003580 0%, #0a4aac 60%, #1a5ec4 100%);
-    padding: 64px 24px 72px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-  .hero-plane {
-    position: absolute;
-    right: -20px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 180px;
-    opacity: 0.05;
-    filter: blur(1px);
-    user-select: none;
-  }
-  .hero-inner {
-    max-width: 900px;
-    margin: 0 auto;
-    position: relative;
-  }
-  .hero-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.85);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    padding: 5px 12px;
-    border-radius: 20px;
-    margin-bottom: 20px;
-    border: 1px solid rgba(255,255,255,0.15);
-  }
-  .hero h1 {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: clamp(32px, 5vw, 52px);
-    font-weight: 800;
-    color: white;
-    line-height: 1.1;
-    margin-bottom: 12px;
-    letter-spacing: -1px;
-  }
-  .hero h1 em {
-    font-style: normal;
-    color: #7ab3f5;
-  }
-  .hero-sub {
-    color: rgba(255,255,255,0.65);
-    font-size: 15px;
-    font-weight: 300;
-    max-width: 520px;
-    line-height: 1.6;
-    margin-bottom: 28px;
-  }
-  .hero-stats {
-    display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-  }
-  .hero-stat {
-    text-align: center;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 10px 20px;
-    backdrop-filter: blur(4px);
-  }
-  .hero-stat-num {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: 22px;
-    font-weight: 800;
-    color: white;
-  }
-  .hero-stat-label {
-    font-size: 11px;
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 0.5px;
-    margin-top: 2px;
-  }
-
-  /* LAYOUT */
-  .layout {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 24px 80px;
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 32px;
-    align-items: start;
-  }
-
-  /* SIDEBAR */
-  .sidebar {
-    position: sticky;
-    top: 72px;
-  }
-  .sidebar-card {
-    background: white;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,53,128,0.06);
-  }
-  .sidebar-title {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    padding: 14px 16px 10px;
-    border-bottom: 1px solid var(--rule-line);
-  }
-  .sidebar-link {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    text-decoration: none;
-    color: var(--muted);
-    font-size: 13px;
-    font-weight: 400;
-    transition: all 0.15s;
-    border-bottom: 1px solid var(--rule-line);
-  }
-  .sidebar-link:last-child { border-bottom: none; }
-  .sidebar-link:hover { color: var(--tui); background: var(--tui-light); }
-  .sidebar-link.active { color: var(--tui); background: var(--tui-light); font-weight: 500; }
-  .sidebar-icon { font-size: 16px; width: 20px; text-align: center; }
-  .sidebar-count {
-    margin-left: auto;
-    background: var(--tui-light);
-    color: var(--tui);
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 7px;
-    border-radius: 10px;
-  }
-  .severity-legend {
-    margin-top: 16px;
-    background: white;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    padding: 14px 16px;
-    box-shadow: 0 2px 12px rgba(0,53,128,0.06);
-  }
-  .severity-legend-title {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 10px;
-  }
-  .sev-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 6px;
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .sev-item:last-child { margin-bottom: 0; }
-
-  /* MAIN CONTENT */
-  .content { min-width: 0; }
-
-  .section-block {
-    background: white;
-    border-radius: 16px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 16px rgba(0,53,128,0.05);
-    animation: fadeUp 0.4s ease both;
-  }
-  .section-block:nth-child(1) { animation-delay: 0.05s; }
-  .section-block:nth-child(2) { animation-delay: 0.1s; }
-  .section-block:nth-child(3) { animation-delay: 0.15s; }
-  .section-block:nth-child(4) { animation-delay: 0.2s; }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .section-head {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 20px 24px;
-    background: linear-gradient(to right, var(--tui-light), transparent);
-    border-bottom: 1px solid var(--rule-line);
-    cursor: pointer;
-    user-select: none;
-  }
-  .section-head:hover { background: linear-gradient(to right, #dce8f8, transparent); }
-  .section-emoji {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    background: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    border: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-  .section-meta { flex: 1; }
-  .section-name {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: 15px;
-    font-weight: 700;
-    color: var(--tui);
-    letter-spacing: -0.2px;
-  }
-  .section-desc {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
-  .section-toggle {
-    font-size: 18px;
-    color: var(--muted);
-    transition: transform 0.25s;
-  }
-  .section-toggle.open { transform: rotate(180deg); }
-
-  .rules-list { padding: 0; }
-  .rule-item {
-    display: flex;
-    gap: 16px;
-    padding: 18px 24px;
-    border-bottom: 1px solid var(--rule-line);
-    transition: background 0.15s;
-  }
-  .rule-item:last-child { border-bottom: none; }
-  .rule-item:hover { background: #fafbff; }
-  .rule-num {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--tui);
-    opacity: 0.4;
-    min-width: 28px;
-    padding-top: 3px;
-    letter-spacing: 0.5px;
-  }
-  .rule-body { flex: 1; }
-  .rule-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-wrap: wrap;
-    margin-bottom: 5px;
-  }
-  .rule-title {
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; font-weight: 700; letter-spacing: -0.3px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-  }
-  .badge {
-    font-size: 10px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 20px;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-  }
-  .badge-warn { background: var(--warn-bg); color: var(--warn); }
-  .badge-kick { background: var(--kick-bg); color: var(--kick); }
-  .badge-ban { background: var(--ban-bg); color: var(--ban); }
-  .rule-desc {
-    font-size: 13.5px;
-    color: #4b5563;
-    line-height: 1.65;
-    font-weight: 300;
-  }
-
-  /* FOOTER */
-  footer {
-    background: var(--tui);
-    color: rgba(255,255,255,0.5);
-    text-align: center;
-    font-size: 12px;
-    padding: 24px;
-    font-weight: 300;
-  }
-  footer strong { color: rgba(255,255,255,0.8); font-weight: 500; }
-
-  /* MOBILE */
-  @media (max-width: 680px) {
-    .layout { grid-template-columns: 1fr; }
-    .sidebar { position: static; }
-    .hero { padding: 40px 20px 48px; }
-    .hero-plane { display: none; }
-    .nav-links { display: none; }
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4fa;color:#1a1a2e;min-height:100vh}
+nav{background:#003580;position:sticky;top:0;z-index:100}
+.nav-inner{max-width:900px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px;color:white}
+.nav-logo span{background:white;color:#003580;font-size:11px;font-weight:800;padding:2px 8px;border-radius:4px;letter-spacing:1px}
+.nav-links{display:flex;gap:4px}
+.nav-links a{color:rgba(255,255,255,0.65);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:6px}
+.nav-links a:hover{color:white;background:rgba(255,255,255,0.1)}
+.hero{background:#003580;padding:64px 24px 72px;position:relative;overflow:hidden}
+.hero-inner{max-width:900px;margin:0 auto;position:relative}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.85);font-size:11px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:20px;border:1px solid rgba(255,255,255,0.15)}
+.hero h1{font-size:clamp(32px,5vw,52px);font-weight:800;color:white;line-height:1.1;margin-bottom:12px;letter-spacing:-1px}
+.hero h1 em{font-style:normal;color:#7ab3f5}
+.hero-sub{color:rgba(255,255,255,0.65);font-size:15px;max-width:520px;line-height:1.6;margin-bottom:28px}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap}
+.hero-stat{text-align:center;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:10px 20px}
+.hero-stat-num{font-size:22px;font-weight:800;color:white}
+.hero-stat-label{font-size:11px;color:rgba(255,255,255,0.55);margin-top:2px}
+.layout{max-width:900px;margin:0 auto;padding:40px 24px 80px;display:grid;grid-template-columns:220px 1fr;gap:32px;align-items:start}
+.sidebar{position:sticky;top:72px}
+.sidebar-card{background:white;border-radius:14px;border:1px solid rgba(0,53,128,0.1);overflow:hidden;box-shadow:0 2px 12px rgba(0,53,128,0.06)}
+.sidebar-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6b7280;padding:14px 16px 10px;border-bottom:1px solid #e5e9f2}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:10px 16px;text-decoration:none;color:#6b7280;font-size:13px;border-bottom:1px solid #e5e9f2}
+.sidebar-link:last-child{border-bottom:none}
+.sidebar-link:hover,.sidebar-link.active{color:#003580;background:#e8f0fb;font-weight:500}
+.sidebar-icon{font-size:16px;width:20px;text-align:center}
+.sidebar-count{margin-left:auto;background:#e8f0fb;color:#003580;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px}
+.severity-legend{margin-top:16px;background:white;border-radius:14px;border:1px solid rgba(0,53,128,0.1);padding:14px 16px;box-shadow:0 2px 12px rgba(0,53,128,0.06)}
+.severity-legend-title{font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:#6b7280;margin-bottom:10px}
+.sev-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:12px;color:#6b7280}
+.content{min-width:0}
+.section-block{background:white;border-radius:16px;border:1px solid rgba(0,53,128,0.1);overflow:hidden;margin-bottom:24px;box-shadow:0 2px 16px rgba(0,53,128,0.05)}
+.section-head{display:flex;align-items:center;gap:14px;padding:20px 24px;background:#e8f0fb;border-bottom:1px solid #e5e9f2;cursor:pointer;user-select:none}
+.section-head:hover{background:#dce8f8}
+.section-emoji{width:40px;height:40px;border-radius:10px;background:white;display:flex;align-items:center;justify-content:center;font-size:20px;border:1px solid rgba(0,53,128,0.1);flex-shrink:0}
+.section-meta{flex:1}
+.section-name{font-size:15px;font-weight:700;color:#003580}
+.section-desc{font-size:12px;color:#6b7280;margin-top:2px}
+.section-toggle{font-size:18px;color:#6b7280;transition:transform 0.25s;display:inline-block}
+.section-toggle.open{transform:rotate(180deg)}
+.rules-list{padding:0}
+.rule-item{display:flex;gap:16px;padding:18px 24px;border-bottom:1px solid #e5e9f2}
+.rule-item:last-child{border-bottom:none}
+.rule-item:hover{background:#fafbff}
+.rule-num{font-size:11px;font-weight:700;color:#003580;opacity:0.4;min-width:28px;padding-top:3px}
+.rule-body{flex:1}
+.rule-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:5px}
+.rule-title{font-size:14px;font-weight:600;color:#1a1a2e}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;letter-spacing:0.3px;text-transform:uppercase}
+.badge-warn{background:#fef3cd;color:#92650a}
+.badge-kick{background:#fde8de;color:#a03320}
+.badge-ban{background:#fde8e8;color:#a02020}
+.rule-desc{font-size:13.5px;color:#4b5563;line-height:1.65}
+footer{background:#003580;color:rgba(255,255,255,0.5);text-align:center;font-size:12px;padding:24px}
+footer strong{color:rgba(255,255,255,0.8);font-weight:500}
+@media(max-width:680px){.layout{grid-template-columns:1fr}.sidebar{position:static}.nav-links{display:none}.hero{padding:40px 20px 48px}}
 </style>
 </head>
 <body>
-
 <nav>
   <div class="nav-inner">
-    <div class="nav-logo">
-      <span>TUI</span>
-      Airlines PTFS Roleplay
-    </div>
+    <div class="nav-logo"><span>TUI</span> Airlines PTFS Roleplay</div>
     <div class="nav-links">
       <a href="#discord">Discord</a>
       <a href="#ingame">In-Game</a>
@@ -415,312 +77,121 @@
     </div>
   </div>
 </nav>
-
 <div class="hero">
-  <div class="hero-plane">✈</div>
   <div class="hero-inner">
-    <div class="hero-eyebrow">✈ Official Server Document</div>
+    <div class="hero-eyebrow">&#9992; Official Server Document</div>
     <h1>Server Rules &amp;<br><em>Regulations</em></h1>
     <p class="hero-sub">All members are expected to read and follow these rules across both Discord and in-game. Ignorance is not an excuse.</p>
     <div class="hero-stats">
-      <div class="hero-stat">
-        <div class="hero-stat-num">4</div>
-        <div class="hero-stat-label">Sections</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">23</div>
-        <div class="hero-stat-label">Rules</div>
-      </div>
-      <div class="hero-stat">
-        <div class="hero-stat-num">Discord &amp; In-Game</div>
-        <div class="hero-stat-label">Coverage</div>
-      </div>
+      <div class="hero-stat"><div class="hero-stat-num">4</div><div class="hero-stat-label">Sections</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">23</div><div class="hero-stat-label">Rules</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">Discord &amp; In-Game</div><div class="hero-stat-label">Coverage</div></div>
     </div>
   </div>
 </div>
-
 <div class="layout">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="sidebar-card">
       <div class="sidebar-title">Sections</div>
-      <a href="#discord" class="sidebar-link active">
-        <span class="sidebar-icon">💬</span> Discord Conduct
-        <span class="sidebar-count">6</span>
-      </a>
-      <a href="#ingame" class="sidebar-link">
-        <span class="sidebar-icon">✈</span> In-Game Flying
-        <span class="sidebar-count">7</span>
-      </a>
-      <a href="#staff" class="sidebar-link">
-        <span class="sidebar-icon">🏅</span> Staff &amp; Roles
-        <span class="sidebar-count">5</span>
-      </a>
-      <a href="#events" class="sidebar-link">
-        <span class="sidebar-icon">📅</span> Events &amp; Flights
-        <span class="sidebar-count">5</span>
-      </a>
+      <a href="#discord" class="sidebar-link active"><span class="sidebar-icon">&#128172;</span> Discord Conduct <span class="sidebar-count">6</span></a>
+      <a href="#ingame" class="sidebar-link"><span class="sidebar-icon">&#9992;</span> In-Game Flying <span class="sidebar-count">7</span></a>
+      <a href="#staff" class="sidebar-link"><span class="sidebar-icon">&#127973;</span> Staff &amp; Roles <span class="sidebar-count">5</span></a>
+      <a href="#events" class="sidebar-link"><span class="sidebar-icon">&#128197;</span> Events &amp; Flights <span class="sidebar-count">5</span></a>
     </div>
-
     <div class="severity-legend">
       <div class="severity-legend-title">Severity</div>
       <div class="sev-item"><span class="badge badge-warn">Warning</span> First offence</div>
       <div class="sev-item"><span class="badge badge-kick">Kick</span> Server kick</div>
       <div class="sev-item"><span class="badge badge-ban">Ban</span> Permanent ban</div>
-      <div class="sev-item" style="font-size:11px; margin-top:4px;">No badge = staff discretion</div>
+      <div class="sev-item" style="font-size:11px;margin-top:4px;">No badge = staff discretion</div>
     </div>
   </aside>
-
-  <!-- CONTENT -->
   <main class="content">
 
-    <!-- DISCORD -->
     <div class="section-block" id="discord">
       <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-emoji">💬</div>
-        <div class="section-meta">
-          <div class="section-name">Discord Conduct</div>
-          <div class="section-desc">Behaviour expectations across all channels</div>
-        </div>
-        <div class="section-toggle open">⌄</div>
+        <div class="section-emoji">&#128172;</div>
+        <div class="section-meta"><div class="section-name">Discord Conduct</div><div class="section-desc">Behaviour expectations across all channels</div></div>
+        <div class="section-toggle open">&#8964;</div>
       </div>
       <div class="rules-list">
-        <div class="rule-item">
-          <div class="rule-num">1.1</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Respect all members</span><span class="badge badge-warn">Warning</span></div>
-            <div class="rule-desc">Treat every member with respect regardless of rank, experience, or background. Harassment, bullying, discrimination, or personal attacks of any kind are strictly prohibited. This aligns with both Discord and Roblox TOS.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">1.2</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">No inappropriate content</span><span class="badge badge-ban">Ban</span></div>
-            <div class="rule-desc">Do not post NSFW content, graphic imagery, hate speech, or anything that violates Discord's Terms of Service or Community Guidelines. This is a Roblox-affiliated server — keep all content appropriate for all ages.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">1.3</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Use correct channels</span></div>
-            <div class="rule-desc">Post content only in the relevant channel. For example, flight logs belong in #flight-logs, not in #general. Repeated off-topic posting may result in a warning.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">1.4</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">No spam or excessive pinging</span><span class="badge badge-warn">Warning</span></div>
-            <div class="rule-desc">Do not spam messages, use excessive caps lock, or repeatedly ping members or staff without reason. Pinging @everyone or @here is reserved for staff only.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">1.5</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">No advertising</span><span class="badge badge-kick">Kick</span></div>
-            <div class="rule-desc">Advertising other Discord servers, Roblox groups, or any external services without explicit staff permission is prohibited. This includes DM advertising to members.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">1.6</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">English only in main channels</span></div>
-            <div class="rule-desc">To ensure staff can properly moderate, please use English in all main channels. If there is sufficient demand, language-specific channels may be created.</div>
-          </div>
-        </div>
+        <div class="rule-item"><div class="rule-num">1.1</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Respect all members</span><span class="badge badge-warn">Warning</span></div><div class="rule-desc">Treat every member with respect regardless of rank, experience, or background. Harassment, bullying, discrimination, or personal attacks of any kind are strictly prohibited. This aligns with both Discord and Roblox TOS.</div></div></div>
+        <div class="rule-item"><div class="rule-num">1.2</div><div class="rule-body"><div class="rule-header"><span class="rule-title">No inappropriate content</span><span class="badge badge-ban">Ban</span></div><div class="rule-desc">Do not post NSFW content, graphic imagery, hate speech, or anything that violates Discord's Terms of Service or Community Guidelines. This is a Roblox-affiliated server — keep all content appropriate for all ages.</div></div></div>
+        <div class="rule-item"><div class="rule-num">1.3</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Use correct channels</span></div><div class="rule-desc">Post content only in the relevant channel. For example, flight logs belong in #flight-logs, not in #general. Repeated off-topic posting may result in a warning.</div></div></div>
+        <div class="rule-item"><div class="rule-num">1.4</div><div class="rule-body"><div class="rule-header"><span class="rule-title">No spam or excessive pinging</span><span class="badge badge-warn">Warning</span></div><div class="rule-desc">Do not spam messages, use excessive caps lock, or repeatedly ping members or staff without reason. Pinging @everyone or @here is reserved for staff only.</div></div></div>
+        <div class="rule-item"><div class="rule-num">1.5</div><div class="rule-body"><div class="rule-header"><span class="rule-title">No advertising</span><span class="badge badge-kick">Kick</span></div><div class="rule-desc">Advertising other Discord servers, Roblox groups, or any external services without explicit staff permission is prohibited. This includes DM advertising to members.</div></div></div>
+        <div class="rule-item"><div class="rule-num">1.6</div><div class="rule-body"><div class="rule-header"><span class="rule-title">English only in main channels</span></div><div class="rule-desc">To ensure staff can properly moderate, please use English in all main channels. If there is sufficient demand, language-specific channels may be created.</div></div></div>
       </div>
     </div>
 
-    <!-- IN-GAME -->
     <div class="section-block" id="ingame">
       <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-emoji">✈</div>
-        <div class="section-meta">
-          <div class="section-name">In-Game Flying &amp; Operations</div>
-          <div class="section-desc">Standards for all pilots and crew in PTFS</div>
-        </div>
-        <div class="section-toggle open">⌄</div>
+        <div class="section-emoji">&#9992;</div>
+        <div class="section-meta"><div class="section-name">In-Game Flying &amp; Operations</div><div class="section-desc">Standards for all pilots and crew in PTFS</div></div>
+        <div class="section-toggle open">&#8964;</div>
       </div>
       <div class="rules-list">
-        <div class="rule-item">
-          <div class="rule-num">2.1</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Realistic flying standards</span></div>
-            <div class="rule-desc">All pilots are expected to fly in a realistic and professional manner. This includes correct taxiing, takeoff, cruise, and landing procedures. Reckless flying such as aerobatics during operations or intentional crashes is not permitted.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">2.2</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Follow ATC instructions</span><span class="badge badge-warn">Warning</span></div>
-            <div class="rule-desc">When ATC is active, all pilots must follow their instructions. Ignoring ATC clearances, taxiing onto active runways without clearance, or departing without permission is a violation of standard operations.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">2.3</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Use assigned aircraft only</span></div>
-            <div class="rule-desc">Only fly aircraft you are rated or cleared to operate within the airline. Using aircraft outside your rank or clearance — particularly during official flights — is not permitted.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">2.4</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">No trolling or griefing</span><span class="badge badge-ban">Ban</span></div>
-            <div class="rule-desc">Deliberately disrupting flights, ramming other aircraft, blocking runways, or interfering with other players' roleplay is strictly prohibited and may result in a permanent ban.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">2.5</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">File a flight plan</span></div>
-            <div class="rule-desc">Before conducting an official TUI flight, a flight plan should be submitted in the appropriate Discord channel. This includes your route, aircraft type, and estimated departure time.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">2.6</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Maintain radio communication</span></div>
-            <div class="rule-desc">Stay active on the designated voice or text comms channel during flights. Going silent mid-flight without notice can disrupt operations for other members.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">2.7</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Log your flights</span></div>
-            <div class="rule-desc">All completed official flights must be logged in the flight log channel with the required information (route, aircraft, duration). Unlogged flights will not count toward rank progression.</div>
-          </div>
-        </div>
+        <div class="rule-item"><div class="rule-num">2.1</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Realistic flying standards</span></div><div class="rule-desc">All pilots are expected to fly in a realistic and professional manner. This includes correct taxiing, takeoff, cruise, and landing procedures. Reckless flying such as aerobatics during operations or intentional crashes is not permitted.</div></div></div>
+        <div class="rule-item"><div class="rule-num">2.2</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Follow ATC instructions</span><span class="badge badge-warn">Warning</span></div><div class="rule-desc">When ATC is active, all pilots must follow their instructions. Ignoring ATC clearances, taxiing onto active runways without clearance, or departing without permission is a violation of standard operations.</div></div></div>
+        <div class="rule-item"><div class="rule-num">2.3</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Use assigned aircraft only</span></div><div class="rule-desc">Only fly aircraft you are rated or cleared to operate within the airline. Using aircraft outside your rank or clearance — particularly during official flights — is not permitted.</div></div></div>
+        <div class="rule-item"><div class="rule-num">2.4</div><div class="rule-body"><div class="rule-header"><span class="rule-title">No trolling or griefing</span><span class="badge badge-ban">Ban</span></div><div class="rule-desc">Deliberately disrupting flights, ramming other aircraft, blocking runways, or interfering with other players' roleplay is strictly prohibited and may result in a permanent ban.</div></div></div>
+        <div class="rule-item"><div class="rule-num">2.5</div><div class="rule-body"><div class="rule-header"><span class="rule-title">File a flight plan</span></div><div class="rule-desc">Before conducting an official TUI flight, a flight plan should be submitted in the appropriate Discord channel. This includes your route, aircraft type, and estimated departure time.</div></div></div>
+        <div class="rule-item"><div class="rule-num">2.6</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Maintain radio communication</span></div><div class="rule-desc">Stay active on the designated voice or text comms channel during flights. Going silent mid-flight without notice can disrupt operations for other members.</div></div></div>
+        <div class="rule-item"><div class="rule-num">2.7</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Log your flights</span></div><div class="rule-desc">All completed official flights must be logged in the flight log channel with the required information (route, aircraft, duration). Unlogged flights will not count toward rank progression.</div></div></div>
       </div>
     </div>
 
-    <!-- STAFF -->
     <div class="section-block" id="staff">
       <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-emoji">🏅</div>
-        <div class="section-meta">
-          <div class="section-name">Staff &amp; Roles</div>
-          <div class="section-desc">Rank conduct, promotions and expectations</div>
-        </div>
-        <div class="section-toggle open">⌄</div>
+        <div class="section-emoji">&#127973;</div>
+        <div class="section-meta"><div class="section-name">Staff &amp; Roles</div><div class="section-desc">Rank conduct, promotions and expectations</div></div>
+        <div class="section-toggle open">&#8964;</div>
       </div>
       <div class="rules-list">
-        <div class="rule-item">
-          <div class="rule-num">3.1</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Respect staff decisions</span></div>
-            <div class="rule-desc">Staff decisions are to be respected. If you disagree with a moderation action, you may appeal it privately through the proper channels — do not argue publicly in channels or stir up drama.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">3.2</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">No role impersonation</span><span class="badge badge-ban">Ban</span></div>
-            <div class="rule-desc">Claiming to be a staff member, moderator, or any role you do not hold — whether in-game or on Discord — is strictly prohibited. This includes mimicking staff names or nicknames.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">3.3</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Roles must be earned</span></div>
-            <div class="rule-desc">Rank promotions are based on activity, flight logs, conduct, and staff review. Asking staff for a promotion repeatedly is discouraged — show your dedication through your work.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">3.4</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Staff conduct expectations</span></div>
-            <div class="rule-desc">Staff members are held to a higher standard. Any abuse of moderation powers, favouritism, or misconduct by staff should be reported to senior staff or management via a direct message.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">3.5</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Inactivity policy</span></div>
-            <div class="rule-desc">Members who are inactive for an extended period without notice may have their roles reviewed or reset. If you need a break, simply let staff know in the appropriate channel.</div>
-          </div>
-        </div>
+        <div class="rule-item"><div class="rule-num">3.1</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Respect staff decisions</span></div><div class="rule-desc">Staff decisions are to be respected. If you disagree with a moderation action, you may appeal it privately through the proper channels — do not argue publicly in channels or stir up drama.</div></div></div>
+        <div class="rule-item"><div class="rule-num">3.2</div><div class="rule-body"><div class="rule-header"><span class="rule-title">No role impersonation</span><span class="badge badge-ban">Ban</span></div><div class="rule-desc">Claiming to be a staff member, moderator, or any role you do not hold — whether in-game or on Discord — is strictly prohibited. This includes mimicking staff names or nicknames.</div></div></div>
+        <div class="rule-item"><div class="rule-num">3.3</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Roles must be earned</span></div><div class="rule-desc">Rank promotions are based on activity, flight logs, conduct, and staff review. Asking staff for a promotion repeatedly is discouraged — show your dedication through your work.</div></div></div>
+        <div class="rule-item"><div class="rule-num">3.4</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Staff conduct expectations</span></div><div class="rule-desc">Staff members are held to a higher standard. Any abuse of moderation powers, favouritism, or misconduct by staff should be reported to senior staff or management via a direct message.</div></div></div>
+        <div class="rule-item"><div class="rule-num">3.5</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Inactivity policy</span></div><div class="rule-desc">Members who are inactive for an extended period without notice may have their roles reviewed or reset. If you need a break, simply let staff know in the appropriate channel.</div></div></div>
       </div>
     </div>
 
-    <!-- EVENTS -->
     <div class="section-block" id="events">
       <div class="section-head" onclick="toggleSection(this)">
-        <div class="section-emoji">📅</div>
-        <div class="section-meta">
-          <div class="section-name">Events &amp; Flights</div>
-          <div class="section-desc">Participation rules for hosted events</div>
-        </div>
-        <div class="section-toggle open">⌄</div>
+        <div class="section-emoji">&#128197;</div>
+        <div class="section-meta"><div class="section-name">Events &amp; Flights</div><div class="section-desc">Participation rules for hosted events</div></div>
+        <div class="section-toggle open">&#8964;</div>
       </div>
       <div class="rules-list">
-        <div class="rule-item">
-          <div class="rule-num">4.1</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">RSVP and show up</span></div>
-            <div class="rule-desc">If you RSVP to an event, please attend. Repeated no-shows without notifying staff in advance may result in losing priority access to future events or a role review.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">4.2</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Follow event host instructions</span></div>
-            <div class="rule-desc">During an event, the designated event host is in charge. Their instructions take priority. If you have concerns, raise them after the event — not during.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">4.3</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">No event disruption</span><span class="badge badge-kick">Kick</span></div>
-            <div class="rule-desc">Deliberately ruining an event — through trolling, ignoring instructions, or griefing other participants — will result in immediate removal from the event and a potential server kick or ban.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">4.4</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Be ready before the event</span></div>
-            <div class="rule-desc">Join the game server and have your uniform, aircraft, and livery set before the event begins. Causing delays because you're not prepared is inconsiderate to other members.</div>
-          </div>
-        </div>
-        <div class="rule-item">
-          <div class="rule-num">4.5</div>
-          <div class="rule-body">
-            <div class="rule-header"><span class="rule-title">Event slots are first-come, first-served</span></div>
-            <div class="rule-desc">When event capacity is limited, slots are allocated on a first-come, first-served basis unless a role entitles priority boarding. Do not pressure staff to reserve slots for you.</div>
-          </div>
-        </div>
+        <div class="rule-item"><div class="rule-num">4.1</div><div class="rule-body"><div class="rule-header"><span class="rule-title">RSVP and show up</span></div><div class="rule-desc">If you RSVP to an event, please attend. Repeated no-shows without notifying staff in advance may result in losing priority access to future events or a role review.</div></div></div>
+        <div class="rule-item"><div class="rule-num">4.2</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Follow event host instructions</span></div><div class="rule-desc">During an event, the designated event host is in charge. Their instructions take priority. If you have concerns, raise them after the event — not during.</div></div></div>
+        <div class="rule-item"><div class="rule-num">4.3</div><div class="rule-body"><div class="rule-header"><span class="rule-title">No event disruption</span><span class="badge badge-kick">Kick</span></div><div class="rule-desc">Deliberately ruining an event — through trolling, ignoring instructions, or griefing other participants — will result in immediate removal from the event and a potential server kick or ban.</div></div></div>
+        <div class="rule-item"><div class="rule-num">4.4</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Be ready before the event</span></div><div class="rule-desc">Join the game server and have your uniform, aircraft, and livery set before the event begins. Causing delays because you're not prepared is inconsiderate to other members.</div></div></div>
+        <div class="rule-item"><div class="rule-num">4.5</div><div class="rule-body"><div class="rule-header"><span class="rule-title">Event slots are first-come, first-served</span></div><div class="rule-desc">When event capacity is limited, slots are allocated on a first-come, first-served basis unless a role entitles priority boarding. Do not pressure staff to reserve slots for you.</div></div></div>
       </div>
     </div>
 
   </main>
 </div>
-
 <footer>
   <strong>TUI Airlines PTFS Roleplay</strong> — Rules are subject to change. Check back regularly.<br>
-  <span style="margin-top:4px; display:block;">These rules apply to all members across Discord and in-game at all times.</span>
+  <span style="margin-top:4px;display:block;">These rules apply to all members across Discord and in-game at all times.</span>
 </footer>
-
 <script>
-  function toggleSection(header) {
-    const list = header.nextElementSibling;
-    const toggle = header.querySelector('.section-toggle');
-    const isOpen = toggle.classList.contains('open');
-    list.style.display = isOpen ? 'none' : 'block';
-    toggle.classList.toggle('open', !isOpen);
-  }
-
-  // Sidebar active link on scroll
-  const sections = document.querySelectorAll('.section-block');
-  const links = document.querySelectorAll('.sidebar-link');
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(s => {
-      if (window.scrollY >= s.offsetTop - 100) current = s.id;
-    });
-    links.forEach(l => {
-      l.classList.toggle('active', l.getAttribute('href') === '#' + current);
-    });
-  });
+function toggleSection(header){
+  var list=header.nextElementSibling;
+  var toggle=header.querySelector('.section-toggle');
+  var isOpen=toggle.classList.contains('open');
+  list.style.display=isOpen?'none':'block';
+  toggle.classList.toggle('open',!isOpen);
+}
+var sections=document.querySelectorAll('.section-block');
+var links=document.querySelectorAll('.sidebar-link');
+window.addEventListener('scroll',function(){
+  var current='';
+  sections.forEach(function(s){if(window.scrollY>=s.offsetTop-100)current=s.id;});
+  links.forEach(function(l){l.classList.toggle('active',l.getAttribute('href')==='#'+current);});
+});
 </script>
 </body>
 </html>
